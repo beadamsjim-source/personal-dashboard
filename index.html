@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Tool Sessions — boostU</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0B1120;
+    --card: #131B2E;
+    --card-hover: #182240;
+    --border: #1E2D4A;
+    --border-active: #0EA5E9;
+    --cyan: #06B6D4;
+    --cyan-dim: #0891B2;
+    --cyan-glow: rgba(6, 182, 212, 0.15);
+    --cyan-glow-strong: rgba(6, 182, 212, 0.3);
+    --violet: #8B5CF6;
+    --violet-dim: #7C3AED;
+    --violet-glow: rgba(139, 92, 246, 0.15);
+    --emerald: #10B981;
+    --emerald-glow: rgba(16, 185, 129, 0.15);
+    --amber: #F59E0B;
+    --amber-glow: rgba(245, 158, 11, 0.15);
+    --pink: #EC4899;
+    --text: #F1F5F9;
+    --text-dim: #94A3B8;
+    --text-muted: #64748B;
+    --success: #10B981;
+    --error: #EF4444;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 20% 20%, rgba(6, 182, 212, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.02) 0%, transparent 70%);
+    animation: bgDrift 20s ease-in-out infinite alternate;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  @keyframes bgDrift {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(-3%, 3%) rotate(2deg); }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.6s ease-out;
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--cyan-glow);
+    border: 1px solid rgba(6, 182, 212, 0.2);
+    border-radius: 100px;
+    padding: 0.35rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--cyan);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+  }
+
+  .header-badge svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+  }
+
+  .header h1 span {
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header p {
+    color: var(--text-dim);
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 460px;
+    margin: 0 auto;
+  }
+
+  /* Form */
+  .form-section {
+    margin-bottom: 1.75rem;
+    animation: fadeUp 0.6s ease-out both;
+  }
+
+  .form-section:nth-child(2) { animation-delay: 0.08s; }
+  .form-section:nth-child(3) { animation-delay: 0.16s; }
+  .form-section:nth-child(4) { animation-delay: 0.24s; }
+  .form-section:nth-child(5) { animation-delay: 0.32s; }
+  .form-section:nth-child(6) { animation-delay: 0.40s; }
+  .form-section:nth-child(7) { animation-delay: 0.48s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Name input */
+  .input-group {
+    margin-bottom: 1.75rem;
+    animation: fadeUp 0.6s ease-out 0.05s both;
+  }
+
+  .input-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.02em;
+  }
+
+  .input-group input,
+  .input-group textarea {
+    width: 100%;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    transition: all 0.2s ease;
+    outline: none;
+  }
+
+  .input-group input:focus,
+  .input-group textarea:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 3px var(--cyan-glow);
+  }
+
+  .input-group input::placeholder,
+  .input-group textarea::placeholder {
+    color: var(--text-muted);
+  }
+
+  .input-group textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  /* Day section */
+  .day-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.3s ease;
+  }
+
+  .day-card:hover {
+    border-color: rgba(255,255,255,0.08);
+  }
+
+  .day-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .day-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .day-header h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .day-header .day-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: auto;
+    font-weight: 400;
+  }
+
+  /* Session checkbox */
+  .session {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    position: relative;
+    user-select: none;
+  }
+
+  .session:hover {
+    background: var(--card-hover);
+  }
+
+  .session + .session {
+    border-top: 1px solid rgba(255,255,255,0.03);
+  }
+
+  .session input[type="checkbox"] {
+    display: none;
+  }
+
+  .check-box {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    background: transparent;
+  }
+
+  .check-box svg {
+    width: 13px;
+    height: 13px;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.2s ease;
+    stroke: white;
+    stroke-width: 3;
+    fill: none;
+  }
+
+  .session input:checked + .check-box {
+    border-color: transparent;
+    background: var(--cyan);
+    box-shadow: 0 0 12px var(--cyan-glow-strong);
+  }
+
+  .session input:checked + .check-box svg {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .session-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .session-time {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.15rem;
+  }
+
+  .session-tool {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .session-desc {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 0.1rem;
+  }
+
+  .session-tag {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.55rem;
+    border-radius: 100px;
+    flex-shrink: 0;
+  }
+
+  /* Category colors */
+  .cat-ai .day-dot { background: var(--cyan); }
+  .cat-ai .session-time { color: var(--cyan); }
+  .cat-ai .session-tag { background: var(--cyan-glow); color: var(--cyan); }
+
+  .cat-dev .day-dot { background: var(--violet); }
+  .cat-dev .session-time { color: var(--violet); }
+  .cat-dev .session-tag { background: var(--violet-glow); color: var(--violet); }
+
+  .cat-ops .day-dot { background: var(--emerald); }
+  .cat-ops .session-time { color: var(--emerald); }
+  .cat-ops .session-tag { background: var(--emerald-glow); color: var(--emerald); }
+
+  .cat-open .day-dot { background: var(--amber); }
+  .cat-open .session-time { color: var(--amber); }
+  .cat-open .session-tag { background: var(--amber-glow); color: var(--amber); }
+
+  /* Suggestion box */
+  .suggestion-section {
+    animation: fadeUp 0.6s ease-out 0.5s both;
+  }
+
+  .suggestion-section label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+  }
+
+  .suggestion-section label svg {
+    width: 16px;
+    height: 16px;
+    color: var(--amber);
+  }
+
+  /* Submit */
+  .submit-section {
+    margin-top: 2rem;
+    animation: fadeUp 0.6s ease-out 0.55s both;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--cyan-dim), var(--cyan));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 0.01em;
+  }
+
+  .submit-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba(6, 182, 212, 0.3);
+  }
+
+  .submit-btn:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .submit-btn .btn-text { transition: opacity 0.2s; }
+  .submit-btn.loading .btn-text { opacity: 0; }
+  .submit-btn.loading .spinner { opacity: 1; }
+
+  .spinner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .spinner::after {
+    content: '';
+    width: 22px;
+    height: 22px;
+    border: 2.5px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Counter */
+  .counter {
+    text-align: center;
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    transition: color 0.2s;
+  }
+
+  .counter.has-selection {
+    color: var(--cyan);
+  }
+
+  /* Success state */
+  .success-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: var(--bg);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+    padding: 2rem;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .success-overlay.visible {
+    display: flex;
+  }
+
+  .success-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--emerald-glow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .success-icon svg {
+    width: 36px;
+    height: 36px;
+    color: var(--emerald);
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .success-overlay h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .success-overlay p {
+    color: var(--text-dim);
+    font-size: 1rem;
+    max-width: 360px;
+  }
+
+  /* Error toast */
+  .error-toast {
+    display: none;
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2D1215;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #FCA5A5;
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    z-index: 200;
+    animation: slideUp 0.3s ease;
+  }
+
+  .error-toast.visible { display: block; }
+
+  @keyframes slideUp {
+    from { transform: translate(-50%, 20px); opacity: 0; }
+    to { transform: translate(-50%, 0); opacity: 1; }
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    animation: fadeUp 0.6s ease-out 0.6s both;
+  }
+
+  .footer p {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .footer .brand {
+    font-weight: 600;
+    color: var(--text-dim);
+  }
+
+  /* Setup banner */
+  .setup-banner {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 2rem;
+    font-size: 0.82rem;
+    color: var(--amber);
+    line-height: 1.5;
+    animation: fadeUp 0.6s ease-out 0.02s both;
+  }
+
+  .setup-banner strong { font-weight: 600; }
+
+  .setup-banner code {
+    background: rgba(245, 158, 11, 0.15);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .setup-banner a {
+    color: var(--amber);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .header h1 { font-size: 1.9rem; }
+    .session { padding: 0.85rem 1rem; gap: 0.75rem; }
+    .session-tag { display: none; }
+    .container { padding: 1.5rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      boostU · AI Lab
+    </div>
+    <h1>AI Tool <span>Sessions</span></h1>
+    <p>Schrijf je in voor de workshops die je interesseren. Elke sessie duurt 1 uur — hands-on op kantoor.</p>
+  </div>
+
+  <!-- Setup notice (remove this once your script URL is set) -->
+  <div class="setup-banner" id="setupBanner" style="display:none;">
+    <strong>⚙️ Setup nodig:</strong> Vervang <code>SCRIPT_URL</code> in de HTML door je Google Apps Script URL. Zie de instructies die Jim bij dit bestand heeft gekregen.
+  </div>
+
+  <form id="signupForm" onsubmit="return handleSubmit(event)">
+    <!-- Name -->
+    <div class="input-group">
+      <label for="name">Jouw naam</label>
+      <input type="text" id="name" name="name" placeholder="Vul je naam in…" required>
+    </div>
+
+    <!-- Day 1: Dinsdag 25 februari -->
+    <div class="form-section">
+      <div class="day-card">
+        <div class="day-header cat-ai">
+          <div class="day-dot"></div>
+          <h3>Dinsdag 25 februari</h3>
+          <span class="day-date">Week 1</span>
+        </div>
+        <label class="session cat-ai">
+          <input type="checkbox" name="sessions" value="DI 25/02 09:00 — Claude Skills">
+          <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="session-info">
+            <div class="session-time">09:00 – 10:00</div>
+            <div class="session-tool">Claude Skills</div>
+            <div class="session-desc">Custom AI-workflows bouwen met Claude</div>
+          </div>
+          <span class="session-tag">AI</span>
+        </label>
+        <label class="session cat-dev">
+          <input type="checkbox" name="sessions" value="DI 25/02 11:00 — Claude Code">
+          <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="session-info">
+            <div class="session-time">11:00 – 12:00</div>
+            <div class="session-tool">Claude Code</div>
+            <div class="session-desc">AI-gestuurde coding in je terminal</div>
+          </div>
+          <span class="session-tag">DEV</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Day 2: Donderdag 27 februari -->
+    <div class="form-section">
+      <div class="day-card">
+        <div class="day-header cat-dev">
+          <div class="day-dot"></div>
+          <h3>Donderdag 27 februari</h3>
+          <span class="day-date">Week 1</span>
+        </div>
+        <label class="session cat-dev">
+          <input type="checkbox" name="sessions" value="DO 27/02 09:00 — Claude Connectors">
+          <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="session-info">
+            <div class="session-time">09:00 – 10:00</div>
+            <div class="session-tool">Claude Connectors</div>
+            <div class="session-desc">Claude koppelen aan externe tools & data</div>
+          </div>
+          <span class="session-tag">DEV</span>
+        </label>
+        <label class="session cat-dev">
+          <input type="checkbox" name="sessions" value="DO 27/02 11:00 — Stitch with Google">
+          <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="session-info">
+            <div class="session-time">11:00 – 12:00</div>
+            <div class="session-tool">Stitch with Google</div>
+            <div class="session-desc">Data & apps visueel samenvoegen (no-code)</div>
+          </div>
+          <span class="session-tag">DEV</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Day 3: Dinsdag 4 maart -->
+    <div class="form-section">
+      <div class="day-card">
+        <div class="day-header cat-ops">
+          <div class="day-dot"></div>
+          <h3>Dinsdag 4 maart</h3>
+          <span class="day-date">Week 2</span>
+        </div>
+        <label class="session cat-ops">
+          <input type="checkbox" name="sessions" value="DI 04/03 09:00 — Fonzy.ai">
+          <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="session-info">
+            <div class="session-time">09:00 – 10:00</div>
+            <div class="session-tool">Fonzy.ai</div>
+            <div class="session-desc">Automated SEO en GEO</div>
+          </div>
+          <span class="session-tag">OPS</span>
+        </label>
+        <label class="session cat-open">
+          <input type="checkbox" name="sessions" value="DI 04/03 11:00 — Open sessie">
+          <div class="check-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="session-info">
+            <div class="session-time">11:00 – 12:00</div>
+            <div class="session-tool">Open sessie</div>
+            <div class="session-desc">Jullie keuze! Stem hieronder.</div>
+          </div>
+          <span class="session-tag">TEAM</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Suggestions -->
+    <div class="form-section suggestion-section">
+      <label for="suggestions">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+        Zijn er tools die niet genoemd werden maar je wel aan bod wil zien?
+      </label>
+      <div class="input-group" style="margin-bottom: 0;">
+        <textarea id="suggestions" name="suggestions" placeholder="Bv. Cursor, Midjourney, Zapier…" rows="3"></textarea>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="submit-section">
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <span class="btn-text">Verzenden ✨</span>
+        <span class="spinner"></span>
+      </button>
+      <div class="counter" id="counter">Selecteer minstens 1 sessie</div>
+    </div>
+  </form>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>Hosted by <span class="brand">Jim</span> · AI Officer @ boostU</p>
+  </div>
+</div>
+
+<!-- Success overlay -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
+  <h2>Bedankt! 🎉</h2>
+  <p>Je inschrijving is ontvangen. Je krijgt binnenkort meer info over de sessies.</p>
+</div>
+
+<!-- Error toast -->
+<div class="error-toast" id="errorToast">Er ging iets mis. Probeer het opnieuw.</div>
+
+<script>
+  // =====================================================
+  // ⚠️  REPLACE THIS URL with your Google Apps Script URL
+  // =====================================================
+  const SCRIPT_URL = 'https://script.google.com/a/macros/boostu.be/s/AKfycbx1rL3folP_rGyaQF3O2OCpPxVjQwcsydWFoFNHoCsusxvk0xwQZfal_6b3oGSU__8y/exec';
+  // =====================================================
+
+  // Show setup banner if URL not configured
+  if (SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+    document.getElementById('setupBanner').style.display = 'block';
+  }
+
+  // Update counter on checkbox change
+  const checkboxes = document.querySelectorAll('input[name="sessions"]');
+  const counter = document.getElementById('counter');
+
+  function updateCounter() {
+    const checked = document.querySelectorAll('input[name="sessions"]:checked').length;
+    if (checked === 0) {
+      counter.textContent = 'Selecteer minstens 1 sessie';
+      counter.classList.remove('has-selection');
+    } else {
+      counter.textContent = `${checked} sessie${checked > 1 ? 's' : ''} geselecteerd`;
+      counter.classList.add('has-selection');
+    }
+  }
+
+  checkboxes.forEach(cb => cb.addEventListener('change', updateCounter));
+
+  // Form submission
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('name').value.trim();
+    const sessions = Array.from(document.querySelectorAll('input[name="sessions"]:checked')).map(cb => cb.value);
+    const suggestions = document.getElementById('suggestions').value.trim();
+
+    if (!name) return;
+    if (sessions.length === 0) {
+      counter.textContent = '⚠️ Selecteer minstens 1 sessie';
+      counter.style.color = 'var(--error)';
+      setTimeout(() => { counter.style.color = ''; updateCounter(); }, 2000);
+      return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    try {
+      const data = {
+        name: name,
+        sessions: sessions.join(', '),
+        suggestions: suggestions,
+        timestamp: new Date().toLocaleString('nl-BE')
+      };
+
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      // no-cors returns opaque response, so we assume success
+      document.getElementById('successOverlay').classList.add('visible');
+
+    } catch (err) {
+      console.error(err);
+      const toast = document.getElementById('errorToast');
+      toast.classList.add('visible');
+      setTimeout(() => toast.classList.remove('visible'), 4000);
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>
