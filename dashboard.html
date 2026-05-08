@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTW & Belasting Dashboard — boostU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot"></span>
+      <span><span class="gradient-text">BTW</span> Dashboard</span>
+    </div>
+    <div class="kpi-mini" style="border-left:none;">
+      <span class="lbl">Bedrijf</span>
+      <span class="val" id="topbar-company">—</span>
+    </div>
+    <div class="kpi-mini">
+      <span class="lbl">BTW-nr.</span>
+      <span class="val" id="topbar-vat">—</span>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="kpi-mini">
+      <span class="lbl">Saldo 31/12</span>
+      <span class="val cyan" id="kpi-balance">—</span>
+    </div>
+    <div class="kpi-mini">
+      <span class="lbl">Veilig</span>
+      <span class="val emerald" id="kpi-safe">—</span>
+    </div>
+    <div class="menu-wrap">
+      <button class="icon-btn" id="btn-menu" title="Menu" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      </button>
+      <div class="menu" id="topbar-menu">
+        <button id="btn-export">⬇ Exporteer JSON</button>
+        <button id="btn-import">⬆ Importeer JSON</button>
+        <input type="file" id="import-file" accept="application/json" hidden>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tabs -->
+  <nav class="tabs" id="tabs"></nav>
+
+  <!-- Panels -->
+  <main>
+    <section id="panel-overview"      class="panel" hidden></section>
+    <section id="panel-transactions"  class="panel" hidden></section>
+    <section id="panel-vat"           class="panel" hidden></section>
+    <section id="panel-corp"          class="panel" hidden></section>
+    <section id="panel-social"        class="panel" hidden></section>
+    <section id="panel-advisor"       class="panel" hidden></section>
+    <section id="panel-yearend"       class="panel" hidden></section>
+    <section id="panel-profile"       class="panel" hidden></section>
+  </main>
+</div>
+
+<!-- Modal + toast -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" id="modal"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="dashboard.js"></script>
+</body>
+</html>
